@@ -1,7 +1,7 @@
 ---
 title:  "Hello, World!"
-date:   2013-11-10 10:18:00
-description: Hello, World!
+date:   2016-09-13 14:32:00
+description: A “Hello, World!” program is simple. For me, it is an analogy for the rest of our hard-wired behavior.
 ---
 
 A "Hello, World!" program is simple. If the program compiles and executes successfully, it will display a text greeting to the user. Naturally, this can be written using multiple programming languages. Each is likely to have a de-facto form and probably [variants][hello-world-code-golf] too. The makes for a useful demonstration of the syntax a language uses.
