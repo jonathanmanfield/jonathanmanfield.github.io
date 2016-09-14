@@ -4,11 +4,11 @@ date:   2016-09-13 16:09:00
 description: Here, we demonstrate using lists and dictionaries as parameters for our Data Pipeline that detect anomalous numbers found in a directory of files.
 ---
 
-Let me begin with a quick note. Python Luigi is a great library for building Data Pipelines, which are extremely useful for any data analysis process which is manipulating data step-by-step. You can find a great explanation of the motivations and how to get started on Marco Bonzanini's [blog][bonza-pipe].
+Let me begin with a quick note. Python Luigi is a great library for building Data Pipelines, which are extremely useful for any data analysis process that involves manipulating data step-by-step. You can find a great explanation of the motivations and how to get started on Marco Bonzanini's [blog][bonza-pipe].
 
 # Problem
 
-For the purpose of this post, consider a simple task. We have a collection of files, each contain a single number. The aim is to find the set of numbers which are considered to be anomalous, in terms of their value, with respect to the collection of numbers. 
+For the purpose of this post, consider a simple task. We have a collection of files, each contains a single number. The aim is to find the set of numbers which are considered to be anomalous, in terms of their value, with respect to the collection of numbers. 
 
 This a simplified version of a challenge many organisations actually face. For example, these numbers could represent; load across a network of servers, or the inventory values of vehicles in a fleet of amored cars. In these cases, employing a basic measure of Anomaly Detection could be useful for re-distribution of resources or activation of an early warning system, respectively.
 
@@ -60,6 +60,62 @@ def output(self):
 # Code
 
 In case it might be useful, I've created a [gist][gh-gist] containing code to generate the data and the pipeline.
+
+{% highlight python %}
+Also, as the code for the pipeline is not that long, here it is:
+
+import luigi
+import numpy as np
+import ast
+
+class ReadData(luigi.Task):
+  fn = luigi.ListParameter(default=[1,2,3,4,5,6,8,9,10])
+
+  def requires(self):
+    return []
+
+  def output(self):
+    return luigi.LocalTarget("read_data_fn_{}.txt".format(self.fn))
+
+  def run(self):
+    with self.output().open('w') as fout:
+      c = []
+
+      for f in self.fn:
+        l = int(open('data/'+str(f)+'.txt', 'r').read())
+        c.append(l)
+
+      fout.write(str(c))
+
+class DetectOutliers(luigi.Task):
+  fn = luigi.ListParameter(default=[1,2,3,4,5,6,8,9,10])
+  p = luigi.DictParameter(default={"u": 75, "d": 25, "k": 1.5})
+
+  def requires(self):
+    return[ReadData(fn=self.fn)]
+
+  def output(self):
+    return luigi.LocalTarget("detect_outliers_fn_{}_u_{}_d_{}_k_{}.txt".format(self.fn, self.p["u"], self.p["d"], self.p["k"]))
+
+  def run(self):
+    with self.input()[0].open() as fin, self.output().open('w') as fout:
+      c = ast.literal_eval(fin.read())
+      k = self.p["k"]
+      q_u, q_d = np.percentile(c, [self.p["u"], self.p["d"]])
+      iqr = np.subtract(q_u, q_d)
+      o = [i for i in c if i < q_d-k*iqr or i > q_u+k*iqr]
+      fout.write(str(o))
+
+
+if __name__ == '__main__':
+  luigi.run()
+{% endhighlight %}
+
+One of they advantages of Python Luigi is to be able to run the entire pipeline with one command, this wil automatically resolve the dependencies. In this case, when we run the task to detect outliers, it will automatically read the data.
+
+{% highlight shell %}
+$ python pipe.py DetectOutliers --local-scheduler
+{% endhighlight %}
 
 [bonza-pipe]: https://marcobonzanini.com/2015/10/24/building-data-pipelines-with-python-and-luigi/
 [in-quest]: http://arxiv.org/abs/1508.03981
