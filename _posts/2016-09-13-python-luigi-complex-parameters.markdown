@@ -59,11 +59,9 @@ def output(self):
 
 # Code
 
-In case it might be useful, I've created a [gist][gh-gist] containing code to generate the data and the pipeline.
+In case it might be useful, I've created a [gist][gh-gist] containing code to generate the data and the pipeline. Also, as the code for the pipeline is not that long, here it is:
 
 {% highlight python %}
-Also, as the code for the pipeline is not that long, here it is:
-
 import luigi
 import numpy as np
 import ast
