@@ -1,7 +1,7 @@
 ---
 title:  "What is a Red-eye Flight?"
 description: Colloquials present challenges for computer interpretation, partly due to their contextual usage.
-## date: add a date when publishing
+date: 2016-09-15 17:55:00
 ---
 
 A lexicon of words and phrases that are non-standard or casual are part of everyday conversation. It is fascinating that different cultures and languages share common expressions that have different direct translations. In English, we can describe something as totally incomprehensible to us by declaring "It's all Greek to me.". In Greek, they say "It's Chinese to me.". Things start to get [geopolitical](http://omniglot.com/language/idioms/incomprehensible.php), maybe in the future this will become another data visusalisation. 
